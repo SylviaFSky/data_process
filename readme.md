@@ -65,7 +65,7 @@ roscore
 4.2 Run the lidar projection node
 
 ```
-roslaunch data_process readLidar lidar.bag 0
+rosrun data_process readLidar lidar.bag 0
 ```
 
 Before run the node, the path in the readLidar.cpp file may need to be changed.
@@ -73,7 +73,7 @@ Before run the node, the path in the readLidar.cpp file may need to be changed.
 4.3 Run the image projection node
 
 ```
-roslauch data_process readImage Image/grab5.bmp 0 1 0
+rosrun data_process readImage Image/grab5.bmp 0 1 0
 ```
 
 Before run the node, the path in the readImage.cpp file may need to be changed.
