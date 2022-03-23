@@ -12,6 +12,8 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "bitset": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "*.tcc": "cpp",
+        "iostream": "cpp"
     }
 }

@@ -7,34 +7,88 @@
 #include <pcl_ros/transforms.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sys/types.h> 
+#include <dirent.h>
+#include <typeinfo>
 #include <iostream>
 
 using namespace std;
-int main(){
-    pcl::PointCloud<pcl::PointXYZI>::Ptr output(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr input1(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr input2(new pcl::PointCloud<pcl::PointXYZI>);
-    pcl::PCDReader reader;
-    if(reader.read("/home/xwy/WS/fisheye_ws/src/data_process/src/1.pcd", *input1) < 0){
-        PCL_ERROR("File is not exist!");
-        system("pause");
-        return -1;
-    }
-    cout << "Input1 has " << input1->points.size() << "points" << endl;
-    if(reader.read("/home/xwy/WS/fisheye_ws/src/data_process/src/2.pcd", *input2) < 0){
-        PCL_ERROR("File is not exist!");
-        system("pause");
-        return -1;
-    }
-    cout << "Input2 has " << input2->points.size() << "points" << endl;
+#define GROUPSIZE 10    // You can change the size of a PCD group
+#define MODE (S_IRWXU | S_IRWXG | S_IRWXO)
 
-    for(int i = 0; i < input1->points.size(); i++){
-        output->points.push_back(input1->points[i]);
+// Change your directory 
+string inputDir = "/home/xwy/fisheye/Data/pcdOutput/";
+string outputDir = "/home/xwy/WS/fisheye_ws/src/data_process/data/output/";
+
+// Check if output directory exists, if not, create a new directory
+void CheckOutputFolder(string outputDir){
+    if(opendir(outputDir.c_str()) == NULL){             // The first parameter of 'opendir' is char *
+        cout << outputDir << " not exsits!" << endl;
+        int ret = mkdir(outputDir.c_str(), MODE);       // 'mkdir' used for creating new directory
     }
-    for(int i = 0; i < input2->points.size(); i++){
-        output->points.push_back(input2->points[i]);
+    else{
+        cout << "outputDir already exists!" << endl;
     }
-    cout << "Output has " << output->points.size() << "points" << endl;
-    pcl::io::savePCDFileBinary("/home/xwy/WS/fisheye_ws/src/data_process/src/Output.pcd", *output);
+}
+
+int readFileList(const std::string &folderPath,
+                 std::vector<std::string> &vFileList)
+{
+    DIR *dp;
+    struct dirent *dirp;
+    if ((dp = opendir(folderPath.c_str())) == NULL)
+    {
+        return 0;
+    }
+
+    int num = 0;
+    while ((dirp = readdir(dp)) != NULL)
+    {
+        std::string name = std::string(dirp->d_name);
+        if (name != "." && name != "..")
+        {
+            vFileList.push_back(name);
+            num++;
+        }
+    }
+    closedir(dp);
+    cout << "success!" << endl;
+
+    return num;
+}
+int main(){
+    pcl::PCDReader reader;      //used for read PCD files
+    vector <string> nameList;
+    CheckOutputFolder(outputDir);
+    readFileList(inputDir, nameList);
+    sort(nameList.begin(),nameList.end());      // sort file names by order
+    int groupCount = nameList.size() / GROUPSIZE;
+    
+    // PCL PointCloud pointer. Remember that the pointer need to be given a new space
+    pcl::PointCloud<pcl::PointXYZI>::Ptr input(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr output(new pcl::PointCloud<pcl::PointXYZI>);
+    int outputId = 0;
+    int nameLength = GROUPSIZE * groupCount;
+    auto nameIter = nameList.begin();
+    for(int i = 0; i < groupCount; i++){
+        for(int j = 0; j < GROUPSIZE; j++){
+            string fileName = inputDir + *nameIter;
+            cout << fileName << endl;
+            if(reader.read(fileName, *input) < 0){      // read PCD files, and save PointCloud in the pointer
+                PCL_ERROR("File is not exist!");
+                system("pause");
+                return -1;
+            }
+            int pointCount = input -> points.size();
+            for(int k = 0; k < pointCount; k++){
+                output -> points.push_back(input -> points[k]);
+            }
+            nameIter++;         
+        }
+        pcl::io::savePCDFileBinary(outputDir + to_string(i) + ".pcd", *output);     // Save PCD files with destination file name and PointCloud pointer
+    }
     return 0;
 }
