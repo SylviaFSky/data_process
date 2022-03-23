@@ -16,10 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rosbag
   pcl_ros
-<<<<<<< HEAD
   std_msgs
-=======
->>>>>>> cec4947d41154aa4138cbbad6fdf31e290b9d616
 )
 
 ## System dependencies are found with CMake's conventions
@@ -112,14 +109,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-<<<<<<< HEAD
 #  LIBRARIES data_process
   CATKIN_DEPENDS roscpp rosmsg rospy
-=======
-#  INCLUDE_DIRS include
-#  LIBRARIES data_process
-#  CATKIN_DEPENDS roscpp rosmsg rospy
->>>>>>> cec4947d41154aa4138cbbad6fdf31e290b9d616
 #  DEPENDS system_lib
 )
 
@@ -132,11 +123,8 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-<<<<<<< HEAD
   ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-=======
->>>>>>> cec4947d41154aa4138cbbad6fdf31e290b9d616
 )
 
 ## Declare a C++ library
@@ -156,11 +144,8 @@ include_directories(
 
 add_executable(readLidar src/readLidar.cpp)
 add_executable(readImage src/readImage.cpp)
-<<<<<<< HEAD
 add_executable(lidarEdge src/lidarEdge.cpp)
 add_executable(pcdMerge src/pcdMerge)
-=======
->>>>>>> cec4947d41154aa4138cbbad6fdf31e290b9d616
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -187,7 +172,6 @@ target_link_libraries(readImage
   ${PCL_LIBRARIES}
   ${OpenCV_LIBS}
 )
-<<<<<<< HEAD
 
 target_link_libraries(lidarEdge
   ${catkin_LIBRARIES}
@@ -200,8 +184,6 @@ target_link_libraries(pcdMerge
   ${PCL_LIBRARIES}
   ${OpenCV_LIBS}
 )
-=======
->>>>>>> cec4947d41154aa4138cbbad6fdf31e290b9d616
 #############
 ## Install ##
 #############
